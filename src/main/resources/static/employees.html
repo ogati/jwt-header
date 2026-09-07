@@ -1,18 +1,46 @@
-<script>
-async function fetchEmployees() {
-	const token = localStorage.getItem("jwt");
+<!DOCTYPE html>
+<html>
+<body>
+    <form id="logoutForm" style="display: flex; justify-content: center;">
+        <button type="button" onclick="logout()">Logout</button>
+    </form>
 	
-	const res = await fetch("/employees", {
-	    method: "GET",
-	    headers: {
-			"Content-Type": "application/json",
-	        "Authorization": `Bearer ${token}`
-	    },
-	});
+	<div id="content"></div>
 	
-	const data = await res.json();
-	document.write(`<pre>${JSON.stringify(data, null, 4)}</pre>`)
-}
-
-fetchEmployees();
-</script>
+	<script>
+	async function fetchEmployees() {
+		const token = localStorage.getItem("jwt");
+		
+		if (token == null) {
+			window.location.href = "/index.html";
+			return;
+		}
+		
+		try {
+			const res = await fetch("/employees", {
+			    method: "GET",
+			    headers: {
+					"Content-Type": "application/json",
+			        "Authorization": `Bearer ${token}`
+			    },
+			});
+			
+			if (!res.ok) throw new Error(`Status ${res.status}`);
+			
+			const data = await res.json();
+			document.getElementById("content").innerHTML = `<pre>${JSON.stringify(data, null, 4)}</pre>`;
+		} catch (err) {
+			console.error(`${err}. Fetch failed.`);
+			document.getElementById("content").textContent = "Failed to load employee data.";
+		}
+	}
+	
+	function logout() {
+		localStorage.removeItem("jwt");
+		window.location.href = "/index.html";
+	}
+	
+	fetchEmployees();
+	</script>
+</body>
+</html>

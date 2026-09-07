@@ -29,10 +29,10 @@ public class SecurityConfig {
     
 	@Bean
     SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter, Environment env) throws Exception {
-		List<String> urls = new ArrayList<>(List.of("/index.html", "/login", "/employees.html"));
+		List<String> publicUrls = new ArrayList<>(List.of("/index.html", "/login", "/employees.html"));
 		
 		if (env.matchesProfiles("dev")) {
-    		urls.add("/h2-console/**");
+    		publicUrls.add("/h2-console/**");
     		http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
 		}
 		
@@ -40,7 +40,7 @@ public class SecurityConfig {
         	.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> 
-            	auth.requestMatchers(urls.toArray(String[]::new)).permitAll()
+            	auth.requestMatchers(publicUrls.toArray(String[]::new)).permitAll()
 	                .requestMatchers("/admin/**").hasRole("ADMIN")
 	                .anyRequest().authenticated())
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
