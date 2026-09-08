@@ -11,7 +11,7 @@
 	async function fetchEmployees() {
 		const token = localStorage.getItem("jwt");
 		
-		if (token == null) {
+		if (token == null) { // unauthenticated user
 			window.location.href = "/index.html";
 			return;
 		}
